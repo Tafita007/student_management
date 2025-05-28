@@ -99,7 +99,7 @@ async function getNextCourse(studentId) {
 function calculateCredits(grades) {
     // Implémentez la logique de calcul des crédits
     // Par exemple, compter les cours validés (note >= 10)
-    const passedCourses = grades.filter(g => g.grade >= 10);
+    const passedCourses = grades.filter(g => g.grade >= 50);
     return passedCourses.length * 5; // Exemple: 5 crédits par cours validé
 }
 
