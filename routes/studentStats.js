@@ -1,30 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { Student, Course, Grade } =  require('../model/schemas'); // Importez vos modèles
-
-// Statistiques globales pour un étudiant
+const { Student, Course, Grade } =  require('../model/schemas'); 
 router.get('/stats/:studentId', async (req, res) => {
     try {
         const studentId = req.params.studentId;
 
-        // 1. Récupérer les informations de l'étudiant
         const student = await Student.findById(studentId);
         if (!student) {
             return res.status(404).json({ message: 'Étudiant non trouvé' });
         }
 
-        // 2. Récupérer toutes les notes de l'étudiant
         const grades = await Grade.find({ student: studentId })
             .populate('course', 'name code')
             .sort({ date: 1 });
 
-        // 3. Calculer la moyenne générale
         const average = grades.reduce((sum, grade) => sum + grade.grade, 0) / grades.length;
 
-        // 4. Préparer les données de progression (par mois/semestre)
         const progression = calculateProgression(grades);
 
-        // 5. Préparer les données pour les graphiques
         const chartData = {
             grades: grades.map(g => ({
                 course: g.course.name,
@@ -34,7 +27,6 @@ router.get('/stats/:studentId', async (req, res) => {
             progression
         };
 
-        // 6. Calculer le positionnement (exemple simplifié)
         const allStudents = await Grade.aggregate([
             { $group: { _id: "$student", average: { $avg: "$grade" } } }
         ]);
@@ -50,9 +42,9 @@ router.get('/stats/:studentId', async (req, res) => {
             },
             stats: {
                 overallAverage: average.toFixed(2),
-                credits: calculateCredits(grades), // À implémenter selon votre logique
+                credits: calculateCredits(grades),
                 position,
-                nextCourse: await getNextCourse(studentId) // À implémenter
+                nextCourse: await getNextCourse(studentId)
             },
             chartData
         });
@@ -63,11 +55,9 @@ router.get('/stats/:studentId', async (req, res) => {
     }
 });
 
-// Fonctions utilitaires
 function calculateProgression(grades) {
-    // Grouper les notes par période (exemple simplifié)
     const progression = [];
-    const periodSize = Math.ceil(grades.length / 6); // 6 périodes
+    const periodSize = Math.ceil(grades.length / 6); 
     
     for (let i = 0; i < 6; i++) {
         const periodGrades = grades.slice(i * periodSize, (i + 1) * periodSize);
@@ -91,16 +81,14 @@ function calculatePosition(rank, total) {
 }
 
 async function getNextCourse(studentId) {
-    // Implémentez la logique pour récupérer le prochain cours
-    // Par exemple, en fonction de l'emploi du temps
+
     return "Algorithmique - 15/05/2025";
 }
 
 function calculateCredits(grades) {
-    // Implémentez la logique de calcul des crédits
-    // Par exemple, compter les cours validés (note >= 10)
+   
     const passedCourses = grades.filter(g => g.grade >= 50);
-    return passedCourses.length * 5; // Exemple: 5 crédits par cours validé
+    return passedCourses.length * 5; 
 }
 
 module.exports = router;

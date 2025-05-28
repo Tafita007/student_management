@@ -2,20 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { Student, Course, Grade } =  require('../model/schemas');
 
-// Statistiques globales pour l'admin
 router.get('/', async (req, res) => {
     try {
-        // 1. Récupérer les données agrégées
         const [studentsCount, coursesCount, grades] = await Promise.all([
             Student.countDocuments(),
             Course.countDocuments(),
             Grade.find().populate('student course')
         ]);
 
-        // 2. Calculer la moyenne générale
         const averageGrade = grades.reduce((sum, grade) => sum + grade.grade, 0) / grades.length;
 
-        // 3. Nouveaux étudiants ce mois-ci
         const currentMonth = new Date().getMonth();
         const newStudents = await Student.countDocuments({
             createdAt: { 
@@ -24,7 +20,6 @@ router.get('/', async (req, res) => {
             }
         });
 
-        // 4. Moyennes par cours
         const courseAverages = await Grade.aggregate([
             { $group: { _id: "$course", average: { $avg: "$grade" } } },
             { $lookup: { from: "courses", localField: "_id", foreignField: "_id", as: "course" } },
@@ -32,13 +27,11 @@ router.get('/', async (req, res) => {
             { $project: { courseName: "$course.name", average: { $round: ["$average", 2] } } }
         ]);
 
-        // 5. Répartition des étudiants par filière (exemple avec un champ fictif 'field')
         const studentsByField = await Student.aggregate([
             { $group: { _id: "$field", count: { $sum: 1 } } },
             { $project: { field: "$_id", count: 1, _id: 0 } }
         ]);
 
-        // 6. Évolution des inscriptions (6 derniers mois)
         const registrationsEvolution = await Student.aggregate([
             { 
                 $match: { 
@@ -60,7 +53,6 @@ router.get('/', async (req, res) => {
             { $limit: 6 }
         ]);
 
-        // 7. Top 5 des étudiants
         const topStudents = await Grade.aggregate([
             { 
                 $group: { 
@@ -93,7 +85,7 @@ router.get('/', async (req, res) => {
                 coursesCount,
                 averageGrade: averageGrade.toFixed(2),
                 newStudents,
-                activeCourses: coursesCount // À adapter si vous avez un champ 'active'
+                activeCourses: coursesCount
             },
             charts: {
                 courseAverages,
