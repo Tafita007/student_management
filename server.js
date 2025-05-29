@@ -1,5 +1,6 @@
+require('dotenv').config();
 let express = require('express');
-let app = express();
+let mongoose = require('mongoose');
 let bodyParser = require('body-parser');
 let student = require('./routes/students');
 let course = require('./routes/courses');
@@ -8,12 +9,13 @@ let authentification = require('./routes/authentification');
 let studentStatsRouter = require('./routes/studentStats');
 const adminStatsRouter = require('./routes/adminStats');
 
-let mongoose = require('mongoose');
+let studentDetails = require('./routes/studentDetails');
+let app = express();
+
 mongoose.Promise = global.Promise;
 //mongoose.set('debug', true);
 
-
-const uri = 'mongodb+srv://saotrarahajason:SaotraRahajason15@cluster0.dxhunkx.mongodb.net/student-managment?retryWrites=true&w=majority&appName=Cluster0';
+const uri = process.env.MONGO_DB_URL;
 
 const options = {};
 
@@ -28,18 +30,36 @@ mongoose.connect(uri, options)
     });
 
 // Pour accepter les connexions cross-domain (CORS)
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    next();
-});
+// app.use(function (req, res, next) {
+//   const allowedOrigin = process.env.CLIENT_URL || '*';
+//   res.header("Access-Control-Allow-Origin", allowedOrigin);
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+//   // Handle preflight requests
+//   if (req.method === 'OPTIONS') {
+//     return res.sendStatus(204);
+//   }
+
+//   next();
+// });
+
+const cors = require('cors');
+
+const allowedOrigin = process.env.CLIENT_URL;
+
+app.use(cors({
+  origin: allowedOrigin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 // Pour les formulaires
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-let port = process.env.PORT || 8010;
+let PORT = process.env.PORT || 8010;
 
 // les routes
 const prefix = '/api';
@@ -48,6 +68,7 @@ app.route(prefix + '/students')
     .get(student.getAll)
     .post(student.create);
 app.route(prefix + '/students/:id')
+    .get(student.getById)
     .put(student.update)
     .delete(student.deleteStudent);
 
@@ -80,11 +101,18 @@ app.route(prefix + '/changepassword')
 app.use(prefix +'/studentstats', studentStatsRouter);
 app.use(prefix +'/adminstats', adminStatsRouter);
 
+app.route(prefix + '/users')
+    .get(authentification.getAll);
+
+app.route(prefix + '/student-grades/:id')
+    .get(studentDetails.getGradesByStudent);
+
+app.route(prefix + '/student-courses/:id')
+    .get(studentDetails.getCourseByStudent);
 
 // On démarre le serveur
-app.listen(port, "0.0.0.0");
-console.log('Serveur démarré sur http://localhost:' + port);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Serveur démarré sur http://0.0.0.0:${PORT}`);
+});
 
 module.exports = app;
-
-

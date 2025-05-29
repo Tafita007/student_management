@@ -58,4 +58,18 @@ function deleteStudent(req, res) {
         });
 }
 
-module.exports = {getAll, create, update, deleteStudent};
+function getById(req, res) {
+    const studentId = req.params.id;
+
+    Student.findById(studentId).then((student) => {
+        if (!student) {
+            return res.status(404).send({ message: 'Étudiant non trouvé' });
+        }
+        res.send(student);
+    }).catch((err) => {
+        res.status(500).send({ message: 'Erreur du serveur', error: err });
+    });
+}
+
+
+module.exports = {getAll, create, update, deleteStudent, getById};

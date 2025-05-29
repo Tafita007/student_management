@@ -184,4 +184,13 @@ function loginUser(req, res) {
       });
   }
 
-module.exports = { insertProfil, loginUser, changePassword, insertProfilGmail };
+
+function getAll(req, res) {
+  User.find().then((Users) => {
+      res.send(Users);
+  }).catch((err) => {
+      res.send(err);
+  });
+}
+
+module.exports = { insertProfil, loginUser, changePassword, insertProfilGmail, getAll };
