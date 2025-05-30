@@ -76,8 +76,8 @@ function renderRoutesPage(app, client_url) {
         </style>
       </head>
       <body>
-        <h1>Backend Projet react M2</h1>
-        <p>Backend d'une application de gestion académique. Ce projet est réalisé par avotra-saotra-serge-tafita-zoulfikar.</p>
+        <h1>API Projet react M2</h1>
+        <p>API d'une application de gestion académique. Ce projet est réalisé par avotra-saotra-serge-tafita-zoulfikar.</p>
         <a href="${client_url}">Accéder au client</a>
         <h2 style="margin-top:40px;">Routes disponibles :</h2>
         <table>

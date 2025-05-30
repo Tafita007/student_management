@@ -2,6 +2,10 @@
 
 Ce projet est réalisé par avotra-saotra-serge-tafita-zoulfikar.
 
+## Prérequis
+
+- Node JS >= 18
+
 ## Installation
 
 1. **Cloner le dépôt** :
@@ -39,7 +43,7 @@ CLIENT_URL=url-du-frontend
 Pour démarrer le serveur en mode développement :
 
 ```bash
-npm start
+node server.js
 ```
 
 Le serveur sera accessible à l'adresse : `http://localhost:<PORT>`
