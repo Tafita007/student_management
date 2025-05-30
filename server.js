@@ -12,8 +12,8 @@ const course = require('./routes/courses');
 const grade = require('./routes/grades');
 const authentification = require('./routes/authentification');
 const studentDetails = require('./routes/studentDetails');
-const studentStatsRouter = require('./routes/studentStats');
-const adminStatsRouter = require('./routes/adminStats');
+const studentStats = require('./routes/studentStats');
+const adminStats = require('./routes/adminStats');
 const renderRoutesPage = require('./routes/indexRoute');
 
 // App initialization
@@ -100,8 +100,11 @@ app.route(`${prefix}/student-grades/:id`)
 app.route(`${prefix}/student-courses/:id`)
   .get(studentDetails.getCourseByStudent);
 
-app.use(`${prefix}/studentstats`, studentStatsRouter);
-app.use(`${prefix}/adminstats`, adminStatsRouter);
+app.route(`${prefix}/studentstats/:studentId`)
+  .get(studentStats.getStudentStats);
+
+app.route(`${prefix}/adminstats`)
+  .get(adminStats.getAdminStats);
 
 // Server start
 app.listen(PORT, '0.0.0.0', () => {

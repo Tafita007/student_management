@@ -1,8 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const { Student, Course, Grade } =  require('../model/schemas');
+const { Student, Course, Grade } = require('../model/schemas');
 
-router.get('/', async (req, res) => {
+async function getAdminStats(req, res) {
     try {
         const [studentsCount, coursesCount, grades] = await Promise.all([
             Student.countDocuments(),
@@ -103,6 +101,8 @@ router.get('/', async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Erreur serveur' });
     }
-});
+}
 
-module.exports = router;
+module.exports = {
+    getAdminStats
+};

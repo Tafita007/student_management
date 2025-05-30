@@ -1,7 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const { Student, Course, Grade } =  require('../model/schemas'); 
-router.get('/stats/:studentId', async (req, res) => {
+const { Student, Course, Grade } = require('../model/schemas');
+
+async function getStudentStats(req, res) {
     try {
         const studentId = req.params.studentId;
 
@@ -53,7 +52,7 @@ router.get('/stats/:studentId', async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Erreur serveur' });
     }
-});
+}
 
 function calculateProgression(grades) {
     const progression = [];
@@ -81,14 +80,14 @@ function calculatePosition(rank, total) {
 }
 
 async function getNextCourse(studentId) {
-
-    return "Algorithmique - 15/05/2025";
+    return "Algorithmique - 15/05/2025"; // Fake course for example
 }
 
 function calculateCredits(grades) {
-   
     const passedCourses = grades.filter(g => g.grade >= 50);
     return passedCourses.length * 5; 
 }
 
-module.exports = router;
+module.exports = {
+    getStudentStats
+};
