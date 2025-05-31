@@ -2,6 +2,9 @@
 
 Ce projet est réalisé par avotra-saotra-serge-tafita-zoulfikar.
 
+## Lien youtube vers la vidéo de présentation
+[Projet React M2 (MBDS Madagascar 2024-2025)](https://www.youtube.com/watch?v=uS9Om1wSut0)
+
 ## Prérequis
 
 - Node JS >= 18
